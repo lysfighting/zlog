@@ -10,9 +10,9 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 )
 
-func initLogger(ctx context.Context, res *resource.Resource) (*sdklog.LoggerProvider, error) {
+func NewOtelLogProvider(ctx context.Context, endpoint string, res *resource.Resource) (*sdklog.LoggerProvider, error) {
 	exporter, err := otlploggrpc.New(ctx,
-		otlploggrpc.WithEndpoint("34.122.232.161:9017"),
+		otlploggrpc.WithEndpoint(endpoint),
 		otlploggrpc.WithInsecure(),
 	)
 	if err != nil {
