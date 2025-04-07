@@ -8,17 +8,41 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	globalLogger *ZLogger
+	defaultConf  = LogConfig{
+		LogPath:    "app.log",
+		LogLevel:   "info",
+		MaxSize:    100,
+		MaxBackups: 3,
+		MaxAge:     7,
+		Compress:   true,
+	}
+)
+
+func init() {
+	globalLogger = NewZLoggerFromConfig(defaultConf, sdklog.NewLoggerProvider())
+}
+
 type ZLogger struct {
 	Slogger *zap.SugaredLogger // 为了兼容其他接口所以暴露该变量，不直接操作该变量
 }
 
 func NewZLogger(_logger *zap.SugaredLogger) *ZLogger {
 	_logger.Desugar()
-	return &ZLogger{Slogger: _logger}
+	logger := &ZLogger{Slogger: _logger}
+	globalLogger = logger
+	return logger
 }
 
 func NewZLoggerFromConfig(cfg LogConfig, loggerProvider *sdklog.LoggerProvider) *ZLogger {
-	return &ZLogger{Slogger: createZapLogger(cfg, loggerProvider).Sugar()}
+	logger := &ZLogger{Slogger: createZapLogger(cfg, loggerProvider).Sugar()}
+	globalLogger = logger
+	return logger
+}
+
+func GetLogger() *ZLogger {
+	return globalLogger
 }
 
 func (l ZLogger) Info(ctx context.Context, args ...interface{}) {

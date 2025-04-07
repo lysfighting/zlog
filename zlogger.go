@@ -22,8 +22,6 @@ const (
 	ErrorLevel = "error"
 )
 
-var zLogger *zap.SugaredLogger
-
 func createZapLogger(cfg LogConfig, loggerProvider *sdklog.LoggerProvider) *zap.Logger {
 	// log time
 	encoderConfig := zap.NewProductionEncoderConfig()
